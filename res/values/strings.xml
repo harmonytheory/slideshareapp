@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello slideshare!</string>
+    <string name="app_name">slideshare</string>
+    <string name="setting">設定</string>
+    <string name="download_slide">全スライド画像をダウンロード</string>
+    <string name="title_download">Downloading..</string>
+    <string name="progress_status">[ %1$d / %2$d ]</string>
+    <string name="delete_cache">キャッシュデータ削除</string>
+    <string name="open">別のスライドを開く</string>
+    <string name="title_open">スライドのURLを入力してください</string>
+    
+    <string name="title_download_slide">スライドの全画像を取得します</string>
+    <string name="finish_download">画像の取得が完了しました</string>
+    
+    <string name="list_empty_history">表示したスライドはありません</string>
+    
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">Cancel</string>
+</resources>

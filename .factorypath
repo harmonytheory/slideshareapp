@@ -1,0 +1,5 @@
+<factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/googlecode/androidannotations/androidannotations/2.6/androidannotations-2.6.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/vvakame/jsonpullparser-apt/1.5/jsonpullparser-apt-1.5.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/harmonytheory/sqlitehelper-apt/0.0.1-SNAPSHOT/sqlitehelper-apt-0.0.1-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
