@@ -5,6 +5,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -20,6 +21,7 @@ public class SlideShareAsyncHttpClient extends SlideShareHttpClient {
 	}
 	public static void get(Context context, String url, RequestParams params,
 			AsyncHttpResponseHandler responseHandler) {
+		Log.e("get image", "url=" + getAbsoluteUrl(url) + ", params=" + addApiKey(params));
 		client.get(context, getAbsoluteUrl(url), addApiKey(params), responseHandler);
 	}
 }

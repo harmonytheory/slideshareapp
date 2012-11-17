@@ -1,7 +1,6 @@
-package net.harmonytheory.android.slideshare.common;
+package net.harmonytheory.android.slideshare.jpp;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,15 +13,19 @@ import java.util.Map;
  */
 public class JppGenContainer {
 	public static class JppBeanGenerater<T> {
-		protected Method getMethod;
-		protected Method encodeMethod;
-		public JppBeanGenerater(Method getMethod, Method encodeMethod) {
-			this.getMethod = getMethod;
-			this.encodeMethod = encodeMethod;
+		protected Method getMethodByInputStream;
+		protected Method getMethodByString;
+		public JppBeanGenerater(Class<?> clazz) throws NoSuchMethodException {
+			getMethodByInputStream = clazz.getMethod("get", InputStream.class);
+			getMethodByString = clazz.getMethod("get", String.class);
 		}
 		@SuppressWarnings("unchecked")
 		public T get(InputStream is) throws Exception {
-			return (T) getMethod.invoke(null, is);
+			return (T) getMethodByInputStream.invoke(null, is);
+		}
+		@SuppressWarnings("unchecked")
+		public T get(String str) throws Exception {
+			return (T) getMethodByString.invoke(null, str);
 		}
 	}
 	/** サポートクラス。*/
@@ -59,9 +62,7 @@ public class JppGenContainer {
 			// 自動生成クラスを生成
 			Class<?> forName = Class.forName(clazz.getName().concat(generatedPostfix));
 			// 生成出来た場合はサポートクラスとして追加する
-			supportClassMap.put(clazz, new JppBeanGenerater<T>(
-					forName.getMethod("get", InputStream.class), 
-					forName.getMethod("encode", OutputStream.class, clazz)));
+			supportClassMap.put(clazz, new JppBeanGenerater<T>(forName));
 		} catch (Exception e) {
 			// 生成時にエラーが発生した場合は未サポートクラスとする
 			unsupportClassList.add(clazz);

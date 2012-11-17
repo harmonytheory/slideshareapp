@@ -7,7 +7,6 @@ import java.util.List;
 import net.harmonytheory.android.slideshare.common.SlideShareApi;
 import net.harmonytheory.android.slideshare.common.Util;
 import net.harmonytheory.android.slideshare.data.Oembed;
-import net.harmonytheory.android.slideshare.db.OembedSqliteHelper;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -72,7 +71,7 @@ public class SlideShareViewerActivity extends FragmentActivity {
 			uri = Uri.parse(SlideShareApi.getRedirectUrl(uri.toString()));
 		}
 		oembed = SlideShareApi.getOembed(uri.toString());
-		new OembedSqliteHelper().insertOrThrow(oembed);
+//		new OembedSqliteHelper().insert(oembed);
 		try {
 			// 取得結果書き込み
 			Util.writeSlideInfo(getApplicationContext(), oembed);

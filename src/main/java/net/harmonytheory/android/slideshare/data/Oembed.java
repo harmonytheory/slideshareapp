@@ -1,11 +1,16 @@
 package net.harmonytheory.android.slideshare.data;
 
+import java.net.URI;
+import java.util.List;
+
 import net.harmonytheory.apt.annotation.Column;
 import net.harmonytheory.apt.annotation.SqliteBean;
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import android.util.SparseArray;
 
 @SqliteBean(helper="net.harmonytheory.android.slideshare.db.SlideShareDatabaseHelper")
 @JsonModel(decamelize = true)
@@ -69,7 +74,7 @@ public class Oembed implements Parcelable {
 	@Column(primary=true)
 	@JsonKey
 	private int slideshowId;
-
+	
 	public String getProviderUrl() {
 		return providerUrl;
 	}
@@ -184,11 +189,54 @@ public class Oembed implements Parcelable {
 	public void setSlideshowId(int slideshowId) {
 		this.slideshowId = slideshowId;
 	}
+	
+	/**
+	 * 画像URLのパスがおかしい場合があるのでMeta.jsのデータを使って修正する
+	 * @param availableSizes
+	 */
+	public void fixData(SparseArray<SparseArray<List<Integer>>> availableSizes) {
+
+		// 画像リビジョン
+		int endRev = slideImageBaseurl.lastIndexOf('/');
+		int starRev = slideImageBaseurl.lastIndexOf('/', endRev - 1) + 1;
+		int revision = Integer.parseInt(slideImageBaseurl.substring(starRev, endRev));
+		
+		// 画像サイズ
+		int startSize = slideImageBaseurlSuffix.lastIndexOf('-') + 1;
+		int endSize = slideImageBaseurlSuffix.lastIndexOf('.');
+		int slideSize = Integer.parseInt(slideImageBaseurlSuffix.substring(startSize, endSize));
+
+		// 先頭画像でサイズチェック
+		SparseArray<List<Integer>> availablePages = availableSizes.get(1);
+		List<Integer> list = availablePages.get(slideSize);
+		if (list == null || !list.contains(revision)) {
+			slideSize = 0;
+			for (int i=0, l=availablePages.size(); i<l; i++) {
+				int size = availablePages.keyAt(i);
+				List<Integer> revisionList = availablePages.get(size);
+				// 一番大きい画像を採用する
+				if (revisionList.contains(revision) && slideSize < size) {
+					slideSize = size;
+				}
+			}
+			StringBuilder replaceSlideImageBaseUrlSuffix = new StringBuilder();
+			replaceSlideImageBaseUrlSuffix.append(slideImageBaseurlSuffix.subSequence(0, startSize))
+											.append(slideSize)
+											.append(slideImageBaseurlSuffix.substring(endSize));
+			Log.i("Oembed", "fix Suffix:" + slideImageBaseurlSuffix + "=>" + replaceSlideImageBaseUrlSuffix.toString());
+			setSlideImageBaseurlSuffix(replaceSlideImageBaseUrlSuffix.toString());
+		}
+	}
+	
 	public String getSlideImageUrl(int slideNo) {
 		return new StringBuilder("http:").append(getSlideImageBaseurl()).append(slideNo).append(getSlideImageBaseurlSuffix()).toString();
 	}
 	public String getExt() {
 		return getSlideImageBaseurlSuffix().substring(getSlideImageBaseurlSuffix().lastIndexOf("."));
+	}
+	public String getMetaJsUrl() {
+		String urlId = getThumbnail().substring(getThumbnail().lastIndexOf("/") + 1, getThumbnail().lastIndexOf("-"));
+		return new StringBuilder("http://").append(URI.create("http:" + getSlideImageBaseurl()).getHost()).append("/").append(urlId).append("/meta.js").toString();
 	}
 
 	public static final Parcelable.Creator<Oembed> CREATOR = new Parcelable.Creator<Oembed>() {

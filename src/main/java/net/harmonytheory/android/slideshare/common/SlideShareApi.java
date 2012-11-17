@@ -3,10 +3,14 @@ package net.harmonytheory.android.slideshare.common;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.harmonytheory.android.slideshare.data.MetaJs;
 import net.harmonytheory.android.slideshare.data.Oembed;
+import net.harmonytheory.android.slideshare.jpp.JppHttpMessageConverter;
+import net.harmonytheory.android.slideshare.jpp.JppHttpMessageConverterReadFix;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.xml.SimpleXmlHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+
+import android.util.Log;
 
 public class SlideShareApi extends SlideShareHttpClient {
 	// Create a new RestTemplate instance
@@ -28,6 +34,7 @@ public class SlideShareApi extends SlideShareHttpClient {
 	});
 	static {
 		restTemplate.getMessageConverters().add(new JppHttpMessageConverter());
+		restTemplate.getMessageConverters().add(new JppHttpMessageConverterReadFix());
 		restTemplate.getMessageConverters().add(new SimpleXmlHttpMessageConverter());
 	}
 
@@ -43,10 +50,21 @@ public class SlideShareApi extends SlideShareHttpClient {
 		final Map<String, String> param = new HashMap<String, String>();
 		param.put("url", slideUrl);
 		param.put("format", "json");
-		return execute(Oembed.class, ApiUrl.oembed, param);
+		Oembed oembed = execute(Oembed.class, ApiUrl.oembed, param);
+		MetaJs metaJs = getMetaJs(oembed.getMetaJsUrl());
+		oembed.fixData(metaJs.getAvailableSizes());
+		return oembed;
+	}
+	
+	public static MetaJs getMetaJs(String metaJsUrl) {
+		return execute(MetaJs.class, metaJsUrl, null);
 	}
 	
 	private static <T> T execute(Class<T> clazz, String url, Map<String, String> param) {
+		if (param == null) {
+			param = Collections.emptyMap();
+		}
+		Log.e("get image", "url=" + appendQuery(url, param) + ", params=" + param);
 		ResponseEntity<T> response = restTemplate.getForEntity(appendQuery(url, param), clazz, param);
 		return response.getBody();
 	}

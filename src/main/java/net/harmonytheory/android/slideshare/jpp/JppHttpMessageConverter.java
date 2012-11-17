@@ -1,4 +1,4 @@
-package net.harmonytheory.android.slideshare.common;
+package net.harmonytheory.android.slideshare.jpp;
 
 import java.io.IOException;
 
@@ -24,8 +24,23 @@ public class JppHttpMessageConverter extends AbstractHttpMessageConverter<Object
 	 * コンストラクタ。
 	 * @param genPostfix 自動生成クラス接尾辞
 	 */
+	public JppHttpMessageConverter(MediaType... mediaTypes) {
+		super(mediaTypes);
+		JppGenContainer.setPostfix("Gen");
+	}
+	/**
+	 * コンストラクタ。
+	 * @param genPostfix 自動生成クラス接尾辞
+	 */
 	public JppHttpMessageConverter(String genPostfix) {
-		super(MediaType.APPLICATION_JSON);
+		this(genPostfix, MediaType.APPLICATION_JSON);
+	}
+	/**
+	 * コンストラクタ。
+	 * @param genPostfix 自動生成クラス接尾辞
+	 */
+	public JppHttpMessageConverter(String genPostfix, MediaType... mediaTypes) {
+		super(mediaTypes);
 		JppGenContainer.setPostfix(genPostfix);
 	}
 	@Override
