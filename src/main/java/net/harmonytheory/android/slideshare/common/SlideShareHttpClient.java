@@ -8,8 +8,8 @@ import com.loopj.android.http.RequestParams;
 
 
 abstract class SlideShareHttpClient {
-	private static final String API_KEY = "2AkgpuZ8";
-	private static final String SHARED_SECRET = "MUTJSH4s";
+	private static final String API_KEY = "";
+	private static final String SHARED_SECRET = "";
 	
 	protected static String getAbsoluteUrl(String relativeUrl) {
 		if (URI.create(relativeUrl).isAbsolute()) {
